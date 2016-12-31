@@ -1,0 +1,6 @@
+{
+    "require": {
+        "kleiram/transmission-php": "dev-master",
+        "rutger/simpleroute": "^1.1"
+    }
+}

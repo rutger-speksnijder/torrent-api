@@ -1,6 +1,7 @@
 torrent-api
 
 # Todo
- - Router
- - Methods
  - Torrent application connection
+ - Torrent application methods
+ - Convert torrent data to arrays
+ - composer file
