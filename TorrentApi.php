@@ -177,9 +177,29 @@ class TorrentApi
         $this->headers[] = 'HTTP/1.1 500 Internal Server Error';
         $this->error = true;
         if (empty($this->result)) {
-            $this->result = ['message' => 'Internal Server Error'];
+            $this->result = ['message' => 'Internal Server Error.'];
         }
         return $this->output();
+    }
+
+    /**
+     * Handles connection errors.
+     *
+     * @param Exception $exception An exception object.
+     *
+     * @return $this The current object.
+     */
+    private function handleErrors($ex)
+    {
+        // Switch on the exception's message
+        switch ($ex->getMessage()) {
+            case 'Could not connect to Transmission':
+                $this->result = ['message' => 'Internal Server Error. Unable to connect to Transmission.'];
+                return $this->serverError();
+            case 'Access to Transmission requires authentication':
+                return $this->unauthorized();
+        }
+        return $this;
     }
 
     /**
@@ -190,7 +210,11 @@ class TorrentApi
     public function all()
     {
         // Get all torrents and convert them to arrays
-        $torrents = $this->convertTorrentsToArrays($this->transmission->all());
+        try {
+            $torrents = $this->convertTorrentsToArrays($this->transmission->all());
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
         $this->result = ['torrents' => $torrents];
         return $this->output();
     }
@@ -208,7 +232,9 @@ class TorrentApi
         $torrent = false;
         try {
             $torrent = $this->transmission->get($identifier);
-        } catch (\Exception $ex) {}
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
 
         // Check if we found the torrent
         if (!$torrent) {
@@ -276,7 +302,9 @@ class TorrentApi
         $torrent = false;
         try {
             $torrent = $this->transmission->add($this->request['uri']);
-        } catch (\Exception $ex) {}
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
 
         // Check if the torrent was added
         if (!$torrent) {
@@ -306,7 +334,11 @@ class TorrentApi
         $deleteFiles = isset($this->request['files']) && $this->request['files'] == '1';
 
         // Delete the torrent
-        $this->transmission->remove($torrent, $deleteFiles);
+        try {
+            $this->transmission->remove($torrent, $deleteFiles);
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
 
         // Output the result
         $this->result = ['message' => 'Torrent deleted.'];

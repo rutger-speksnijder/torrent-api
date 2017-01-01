@@ -11,6 +11,4 @@ torrent-api
  - /stop
  - /verify
  - /reannounce
- - check connection
- - check authentication
  - composer file
