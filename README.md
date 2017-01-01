@@ -1,7 +1,10 @@
 torrent-api
 
 # Todo
- - Torrent application connection
- - Torrent application methods
- - Convert torrent data to arrays
+ - /add
+ - /delete
+ - /start
+ - /stop
+ - /verify
+ - /reannounce
  - composer file
