@@ -396,7 +396,8 @@ class TorrentApi
         }
 
         // Output the result
-        $this->result = ['message' => 'Torrent started.'];
+        $torrent = $this->convertTorrentsToArrays([$torrent])[0];
+        $this->result = ['message' => 'Torrent started.', 'torrent' => $torrent];
         return $this->output();
     }
 
@@ -444,7 +445,8 @@ class TorrentApi
         }
 
         // Output the result
-        $this->result = ['message' => 'Torrent stopped.'];
+        $torrent = $this->convertTorrentsToArrays([$torrent])[0];
+        $this->result = ['message' => 'Torrent stopped.', 'torrent' => $torrent];
         return $this->output();
     }
 
