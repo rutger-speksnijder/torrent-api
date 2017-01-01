@@ -114,7 +114,11 @@ class TorrentApi
         $router->get('/get/([a-zA-Z0-9]+)', [$this, 'getByHash']);
         $router->post('/add', [$this, 'add']);
         $router->delete('/delete/([0-9]+)', [$this, 'deleteById']);
-        $router->delete('/delete/([a-z-A-Z0-9]+)', [$this, 'deleteByHash']);
+        $router->delete('/delete/([a-zA-Z0-9]+)', [$this, 'deleteByHash']);
+        $router->get('/start/([0-9]+)', [$this, 'startById']);
+        $router->get('/start/([a-zA-Z0-9]+)', [$this, 'startByHash']);
+        $router->get('/stop/([0-9]+)', [$this, 'stopById']);
+        $router->get('/stop/([a-zA-Z0-9]+)', [$this, 'stopByHash']);
 
         // Return the modified router
         return $router;
@@ -367,6 +371,105 @@ class TorrentApi
     public function deleteByHash($hash)
     {
         return $this->delete($hash);
+    }
+
+    /**
+     * Starts a torrent by either id or hash.
+     *
+     * @param mixed $identifier The torrent's identifier.
+     *
+     * @return $this The current object.
+     */
+    private function start($identifier)
+    {
+        // Find the torrent
+        $torrent = $this->find($identifier);
+
+        // Check if we should start immediately
+        $startNow = isset($this->request['now']) && $this->request['now'] == '1';
+
+        // Start the torrent
+        try {
+            $this->transmission->start($torrent, $startNow);
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
+
+        // Output the result
+        $this->result = ['message' => 'Torrent started.'];
+        return $this->output();
+    }
+
+    /**
+     * Starts a torrent by id.
+     *
+     * @param int $id The torrent's id.
+     *
+     * @return $this The current object.
+     */
+    public function startById($id)
+    {
+        return $this->start((int)$id);
+    }
+
+    /**
+     * Starts a torrent by hash.
+     *
+     * @param string $hash The torrent's hash.
+     *
+     * @return $this The current object.
+     */
+    public function startByHash($hash)
+    {
+        return $this->start($hash);
+    }
+
+    /**
+     * Stops a torrent by either id or hash.
+     *
+     * @param mixed $identifier The torrent's identifier.
+     *
+     * @return $this The current object.
+     */
+    private function stop($identifier)
+    {
+        // Find the torrent
+        $torrent = $this->find($identifier);
+
+        // Stop the torrent
+        try {
+            $this->transmission->stop($torrent);
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
+
+        // Output the result
+        $this->result = ['message' => 'Torrent stopped.'];
+        return $this->output();
+    }
+
+    /**
+     * Stops a torrent by id.
+     *
+     * @param int $id The torrent's id.
+     *
+     * @return $this The current object.
+     */
+    public function stopById($id)
+    {
+        return $this->stop((int)$id);
+    }
+
+    /**
+     * Stops a torrent by hash.
+     *
+     * @param strign $hash The torrent's hash.
+     *
+     * @return $this The current object.
+     */
+    public function stopByHash($hash)
+    {
+        return $this->stop($hash);
     }
 
     /**
