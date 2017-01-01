@@ -110,9 +110,9 @@ class TorrentApi
 
         // Torrent routes
         $router->get('/all', [$this, 'all']);
-        $router->post('/add', [$this, 'add']);
         $router->get('/get/([0-9]+)', [$this, 'getById']);
         $router->get('/get/([a-zA-Z0-9]+)', [$this, 'getByHash']);
+        $router->post('/add', [$this, 'add']);
         $router->delete('/delete/([0-9]+)', [$this, 'deleteById']);
         $router->delete('/delete/([a-z-A-Z0-9]+)', [$this, 'deleteByHash']);
 
@@ -130,7 +130,9 @@ class TorrentApi
         // Output the not found error
         $this->headers[] = 'HTTP/1.1 404 Not Found';
         $this->error = true;
-        $this->result = ['message' => 'Not found.'];
+        if (empty($this->result)) {
+            $this->result = ['message' => 'Not found.'];
+        }
         return $this->output();
     }
 
@@ -161,6 +163,57 @@ class TorrentApi
         // Output the data
         $this->result = ['torrents' => $torrents];
         return $this->output();
+    }
+
+    /**
+     * Finds a torrent by either hash or id.
+     *
+     * @param mixed $identifier The torrent's identifier.
+     *
+     * @return $this The current object.
+     */
+    private function get($identifier)
+    {
+        // Get the torrent
+        $torrent = false;
+        try {
+            $torrent = $this->transmission->get($identifier);
+        } catch (\Exception $ex) {}
+
+        // Check if we found the torrent
+        if (!$torrent) {
+            $this->result = ['message' => 'Torrent not found.'];
+            return $this->notFound();
+        }
+
+        // Set the result
+        $torrent = $this->convertTorrentsToArrays([$torrent])[0];
+        $this->result = ['torrent' => $torrent];
+        return $this->output();
+    }
+
+    /**
+     * Gets a torrent by id.
+     *
+     * @param int $id The torrent's id.
+     *
+     * @return $this The current object.
+     */
+    public function getById($id)
+    {
+        return $this->get((int)$id);
+    }
+
+    /**
+     * Gets a torrent by hash.
+     *
+     * @param string $hash The torrent's hash.
+     *
+     * @return $this The current object.
+     */
+    public function getByHash($hash)
+    {
+        return $this->get($hash);
     }
 
     /**
