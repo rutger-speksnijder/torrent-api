@@ -8,6 +8,5 @@ torrent-api
  - https://github.com/kleiram/transmission-php (with additional commit from https://github.com/rutger-speksnijder/transmission-php)
 
 # Todo
- - /verify
  - /reannounce
  - composer file

@@ -119,6 +119,8 @@ class TorrentApi
         $router->get('/start/([a-zA-Z0-9]+)', [$this, 'startByHash']);
         $router->get('/stop/([0-9]+)', [$this, 'stopById']);
         $router->get('/stop/([a-zA-Z0-9]+)', [$this, 'stopByHash']);
+        $router->get('/verify/([0-9]+)', [$this, 'verifyById']);
+        $router->get('/verify/([a-zA-Z0-9]+)', [$this, 'verifyByHash']);
 
         // Return the modified router
         return $router;
@@ -472,6 +474,55 @@ class TorrentApi
     public function stopByHash($hash)
     {
         return $this->stop($hash);
+    }
+
+    /**
+     * Verifies a torrent by either id or hash.
+     *
+     * @param mixed $identifier The torrent's identifier.
+     *
+     * @return $this The current object.
+     */
+    private function verify($identifier)
+    {
+        // Find the torrent
+        $torrent = $this->find($identifier);
+
+        // Verify the torrent
+        try {
+            $this->transmission->verify($torrent);
+        } catch (\Exception $ex) {
+            $this->handleErrors($ex);
+        }
+
+        // Output the result
+        $torrent = $this->convertTorrentsToArrays([$torrent])[0];
+        $this->result = ['message' => 'Torrent verification started.', 'torrent' => $torrent];
+        return $this->output();
+    }
+
+    /**
+     * Verifies a torrent by id.
+     *
+     * @param int $id The torrent's id.
+     *
+     * @return $this The current object.
+     */
+    public function verifyById($id)
+    {
+        return $this->verify((int)$id);
+    }
+
+    /**
+     * Verifies a torrent by hash.
+     *
+     * @param string $hash The torrent's hash.
+     *
+     * @return $this The current object.
+     */
+    public function verifyByHash($hash)
+    {
+        return $this->verify($hash);
     }
 
     /**
