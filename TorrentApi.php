@@ -131,7 +131,7 @@ class TorrentApi
         $this->headers[] = 'HTTP/1.1 404 Not Found';
         $this->error = true;
         if (empty($this->result)) {
-            $this->result = ['message' => 'Not found.'];
+            $this->result = ['message' => 'Endpoint not found.'];
         }
         return $this->output();
     }
@@ -141,12 +141,44 @@ class TorrentApi
      *
      * @return $this The current object.
      */
-    public function unauthorized()
+    private function unauthorized()
     {
         // Output the unauthorized error
-        $this->headers[] = 'HTTP/1.1 403 Forbidden';
+        $this->headers[] = 'HTTP/1.1 401 Unauthorized';
         $this->error = true;
         $this->result = ['message' => 'Unauthorized request.'];
+        return $this->output();
+    }
+
+    /**
+     * Handles bad requests.
+     *
+     * @return $this The current object.
+     */
+    private function badRequest()
+    {
+        // Output the bad request error
+        $this->headers[] = 'HTTP/1.1 400 Bad Request';
+        $this->error = true;
+        if (empty($this->result)) {
+            $this->result = ['message' => 'Bad request.'];
+        }
+        return $this->output();
+    }
+
+    /**
+     * Handles server errors.
+     *
+     * @return $this The current object.
+     */
+    private function serverError()
+    {
+        // Output the internal server error
+        $this->headers[] = 'HTTP/1.1 500 Internal Server Error';
+        $this->error = true;
+        if (empty($this->result)) {
+            $this->result = ['message' => 'Internal Server Error'];
+        }
         return $this->output();
     }
 
@@ -159,20 +191,18 @@ class TorrentApi
     {
         // Get all torrents and convert them to arrays
         $torrents = $this->convertTorrentsToArrays($this->transmission->all());
-
-        // Output the data
         $this->result = ['torrents' => $torrents];
         return $this->output();
     }
 
     /**
-     * Finds a torrent by either hash or id.
+     * Finds a torrent by either has or id.
      *
      * @param mixed $identifier The torrent's identifier.
      *
-     * @return $this The current object.
+     * @return mixed Torrent object if found, script fails otherwise.
      */
-    private function get($identifier)
+    private function find($identifier)
     {
         // Get the torrent
         $torrent = false;
@@ -185,8 +215,20 @@ class TorrentApi
             $this->result = ['message' => 'Torrent not found.'];
             return $this->notFound();
         }
+        return $torrent;
+    }
 
-        // Set the result
+    /**
+     * Returns a torrent by either hash or id.
+     *
+     * @param mixed $identifier The torrent's identifier.
+     *
+     * @return $this The current object.
+     */
+    private function get($identifier)
+    {
+        // Get the torrent
+        $torrent = $this->find($identifier);
         $torrent = $this->convertTorrentsToArrays([$torrent])[0];
         $this->result = ['torrent' => $torrent];
         return $this->output();
@@ -217,9 +259,88 @@ class TorrentApi
     }
 
     /**
-     * Outputs the current result.
+     * Adds a torrent.
      *
      * @return $this The current object.
+     */
+    public function add()
+    {
+        // Check if we have a URI
+        if (empty($this->request['uri'])) {
+            // Send a bad request error
+            $this->result = ['message' => 'Invalid arguments: Missing uri parameter.'];
+            return $this->badRequest();
+        }
+
+        // Add the torrent
+        $torrent = false;
+        try {
+            $torrent = $this->transmission->add($this->request['uri']);
+        } catch (\Exception $ex) {}
+
+        // Check if the torrent was added
+        if (!$torrent) {
+            $this->result = ['message' => 'Torrent could not be added.'];
+            return $this->serverError();
+        }
+
+        // Return the torrent
+        $torrent = $this->convertTorrentsToArrays([$torrent])[0];
+        $this->result = ['torrent' => $torrent];
+        return $this->output();
+    }
+
+    /**
+     * Deletes a torrent by either has or id.
+     *
+     * @param mixed $identifier The torrent's identifier.
+     *
+     * @return $this The current object.
+     */
+    private function delete($identifier)
+    {
+        // Get the torrent
+        $torrent = $this->find($identifier);
+
+        // Check if we should delete files
+        $deleteFiles = isset($this->request['files']) && $this->request['files'] == '1';
+
+        // Delete the torrent
+        $this->transmission->remove($torrent, $deleteFiles);
+
+        // Output the result
+        $this->result = ['message' => 'Torrent deleted.'];
+        return $this->output();
+    }
+
+    /**
+     * Deletes a torrent by id.
+     *
+     * @param int $id The id.
+     *
+     * @return $this The current object.
+     */
+    public function deleteById($id)
+    {
+        return $this->delete((int)$id);
+    }
+
+    /**
+     * Deletes a torrent by hash.
+     *
+     * @param string $hash The hash.
+     *
+     * @return $this The current object.
+     */
+    public function deleteByHash($hash)
+    {
+        return $this->delete($hash);
+    }
+
+    /**
+     * Outputs the current result.
+     *
+     * @return void.
      */
     public function output()
     {
@@ -233,9 +354,7 @@ class TorrentApi
         header('Content-Type: application/json');
         $data = ['error' => (int)$this->error] + $this->result;
         echo json_encode($data);
-
-        // Return the object
-        return $this;
+        exit;
     }
 
     /**
