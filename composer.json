@@ -13,7 +13,7 @@
             "role": "Developer"
         }
     ],
-    "require": {
+    "require-dev": {
         "kleiram/transmission-php": "dev-master",
         "rutger/simpleroute": "^1.1",
         "rutger/restphp": "^2.2"
