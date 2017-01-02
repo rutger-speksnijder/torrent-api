@@ -2,7 +2,7 @@
 
 ## Installation
 ```
-composer require rutger/transmission-api
+composer require rutger/transmission-api "dev-master"
 ```
 
 ## Requirements
