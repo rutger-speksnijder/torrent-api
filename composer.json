@@ -1,6 +1,26 @@
 {
+    "name": "rutger/transmission-api",
+    "description": "",
+    "keywords": [],
+    "homepage": "https://github.com/rutger-speksnijder/transmission-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rutger Speksnijder",
+            "email": "rutgerspeksnijder@hotmail.com",
+            "homepage": "https://github.com/rutger-speksnijder",
+            "role": "Developer"
+        }
+    ],
     "require": {
+        "php": ">=5.4.0",
         "kleiram/transmission-php": "dev-master",
-        "rutger/simpleroute": "^1.1"
+        "rutger/simpleroute": "^1.1",
+        "rutger/restphp": "^2.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "TransmissionApi\\": "."
+        }
     }
 }

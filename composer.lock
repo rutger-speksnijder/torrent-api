@@ -4,9 +4,58 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "abff7b943bf4409301a633be2d0c038a",
-    "content-hash": "4e7a4faa0f5ed07c582b376ad6efc4d3",
+    "hash": "fd5d8d2481005d36165e20a6a048e423",
+    "content-hash": "708ed0ed6d501128efdc1ad46a95c219",
     "packages": [
+        {
+            "name": "bshaffer/oauth2-server-php",
+            "version": "v1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bshaffer/oauth2-server-php.git",
+                "reference": "058c98f73209f9c49495e1799d32c035196fe8b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bshaffer/oauth2-server-php/zipball/058c98f73209f9c49495e1799d32c035196fe8b8",
+                "reference": "058c98f73209f9c49495e1799d32c035196fe8b8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "suggest": {
+                "aws/aws-sdk-php": "~2.8 is required to use the DynamoDB storage engine",
+                "firebase/php-jwt": "~2.2 is required to use JWT features",
+                "predis/predis": "Required to use the Redis storage engine",
+                "thobbs/phpcassa": "Required to use the Cassandra storage engine"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "OAuth2": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brent Shaffer",
+                    "email": "bshafs@gmail.com",
+                    "homepage": "http://brentertainment.com"
+                }
+            ],
+            "description": "OAuth2 Server for PHP",
+            "homepage": "http://github.com/bshaffer/oauth2-server-php",
+            "keywords": [
+                "auth",
+                "oauth",
+                "oauth2"
+            ],
+            "time": "2015-09-18 18:05:10"
+        },
         {
             "name": "kleiram/transmission-php",
             "version": "dev-master",
@@ -144,6 +193,55 @@
                 "random"
             ],
             "time": "2016-11-07 23:38:38"
+        },
+        {
+            "name": "rutger/restphp",
+            "version": "v2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rutger-speksnijder/restphp.git",
+                "reference": "fd288326e0c6be82a6addaf5b6759d4ddf61034d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rutger-speksnijder/restphp/zipball/fd288326e0c6be82a6addaf5b6759d4ddf61034d",
+                "reference": "fd288326e0c6be82a6addaf5b6759d4ddf61034d",
+                "shasum": ""
+            },
+            "require": {
+                "bshaffer/oauth2-server-php": "~1.8",
+                "php": ">=5.4.0",
+                "rutger/simpleroute": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "RestPHP\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rutger Speksnijder",
+                    "email": "rutgerspeksnijder@hotmail.com",
+                    "homepage": "https://github.com/rutger-speksnijder",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A basic library for creating RESTful PHP API's.",
+            "homepage": "https://github.com/rutger-speksnijder/restphp",
+            "keywords": [
+                "api",
+                "basic",
+                "library",
+                "php",
+                "rest",
+                "restful"
+            ],
+            "time": "2017-01-02 18:05:48"
         },
         {
             "name": "rutger/simpleroute",
