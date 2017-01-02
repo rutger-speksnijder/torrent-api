@@ -1,5 +1,10 @@
 # Transmission API
 
+## Todo
+ - files in src folder
+ - edit autoload in composer
+ - installation instructions on copying index.php, .htaccess, and the two config files to root.
+
 ## Installation
 Create a composer.json file with:
 ```
