@@ -1,5 +1,6 @@
 {
     "name": "rutger/transmission-api",
+    "minimum-stability": "dev",
     "description": "",
     "keywords": [],
     "homepage": "https://github.com/rutger-speksnijder/transmission-api",
