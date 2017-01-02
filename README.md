@@ -1,6 +1,14 @@
 # Transmission API
 
 ## Installation
+Create a composer.json file with:
+```
+{
+    "minimum-stability": "dev"
+}
+```
+
+Then run the following command:
 ```
 composer require rutger/transmission-api "dev-master"
 ```
