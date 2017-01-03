@@ -1,6 +1,11 @@
 <?php
 /**
- * Configuration for the transmission api.
+ * Configuration for the Transmission api.
+ * These are the default values.
+ *
+ * @author Rutger Speksnijder.
+ * @since transmission-api 1.0.
+ * @license MIT.
  */
 return [
     'host' => '127.0.0.1',

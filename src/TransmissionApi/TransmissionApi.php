@@ -54,9 +54,11 @@ class TransmissionApi extends \RestPHP\BaseAPI
     /**
      * Initializes the connection to the Transmission server.
      *
+     * @param string $configFile The location to the configuration file for Transmission.
+     *
      * @return $this The current object.
      */
-    public function initialize()
+    public function initialize($configFile)
     {
         // Check request data for username and password
         if (empty($this->data['username']) || empty($this->data['password'])) {
@@ -64,7 +66,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         }
 
         // Load the Transmission configuration file
-        $config = require 'transmission-config.php';
+        $config = require $configFile;
 
         // Authenticate
         $this->transmissionClient = new \Transmission\Client($config['host'], $config['port']);

@@ -1,8 +1,15 @@
 <?php
+/**
+ * Main script that should be loaded for each request.
+ * The .htaccess file points to this script.
+ *
+ * @author Rutger Speksnijder.
+ * @since transmission-api 1.0.
+ * @license MIT.
+ */
+
 // Composer autoloader
 require 'vendor/autoload.php';
-require 'TransmissionApi.php';
-require 'TransmissionUtil.php';
 
 // Check if we have a request location
 if (!isset($_REQUEST['l'])) {
@@ -10,7 +17,7 @@ if (!isset($_REQUEST['l'])) {
 }
 
 // Load the api configuration
-$configuration = (new RestPHP\Configuration)->createFromFile('restphp-config.php');
+$configuration = (new \RestPHP\Configuration)->createFromFile('restphp-config.php');
 
 // Create the api
 $api = new \TransmissionApi\TransmissionApi($_REQUEST['l'], $configuration);
@@ -23,7 +30,7 @@ if (!$api->hasError()) {
     $api->setRoutes();
 
     // Initialize connection to transmission
-    $api->initialize();
+    $api->initialize('transmission-config.php');
 
     // Call the process method
     $api->process();

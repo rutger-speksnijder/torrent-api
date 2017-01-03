@@ -1,10 +1,5 @@
 # Transmission API
 
-## Todo
- - files in src folder
- - edit autoload in composer
- - installation instructions on copying index.php, .htaccess, and the two config files to root.
-
 ## Installation
 Create a composer.json file with:
 ```
@@ -18,8 +13,10 @@ Then run the following command:
 composer require rutger/transmission-api "dev-master"
 ```
 
-## Requirements
- - https://github.com/kleiram/transmission-php (with additional commit from https://github.com/rutger-speksnijder/transmission-php)
+This installs all required libraries.
+
+After installation is done, copy the index.php, .htaccess and the two config files to the root of the location from which you want to run the API.
+Edit the configuration files if needed.
 
 ## Authentication
 Transmission username and password are required for each request.
