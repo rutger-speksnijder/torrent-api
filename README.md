@@ -1,5 +1,9 @@
 # Transmission API
 
+## Todo
+ - authentication in transmission-config.php
+ - whitelist in transmission-config.php
+
 ## Installation
 Create a composer.json file with:
 ```
@@ -17,6 +21,11 @@ This installs all required libraries.
 
 After installation is done, copy the index.php, .htaccess and the two config files to the root of the location from which you want to run the API.
 Edit the configuration files if needed.
+
+Model/Torrent.php -> getStatus, add status !== null check.
+Model/Torrent.php -> setSize, convert to double instead of integer.
+Model/File.php -> setSize, convert to double instead of integer.
+
 
 ## Authentication
 Transmission username and password are required for each request.
