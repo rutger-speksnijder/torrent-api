@@ -60,17 +60,17 @@ class TransmissionApi extends \RestPHP\BaseAPI
      */
     public function initialize($configFile)
     {
-        // Check request data for username and password
-        if (empty($this->data['username']) || empty($this->data['password'])) {
-            return $this->unauthorized();
-        }
-
         // Load the Transmission configuration file
         $config = require $configFile;
 
+        // Check whitelisted ips
+        if (!in_array($_SERVER['REMOTE_ADDR'], $config['whitelist'])) {
+            return $this->forbidden();
+        }
+
         // Authenticate
         $this->transmissionClient = new \Transmission\Client($config['host'], $config['port']);
-        $this->transmissionClient->authenticate($this->data['username'], $this->data['password']);
+        $this->transmissionClient->authenticate($config['username'], $config['password']);
 
         // Create the transmission object
         $this->transmission = new \Transmission\Transmission();
@@ -103,7 +103,23 @@ class TransmissionApi extends \RestPHP\BaseAPI
         // Output the unauthorized error
         $this->setStatusCode(401);
         if (empty($this->response['message'])) {
-            $this->response = ['message' => 'Unauthorized request.'];
+            $this->response = ['message' => 'Unauthorized.'];
+        }
+        $this->output(true);
+        exit;
+    }
+
+    /**
+     * Handles forbidden requests.
+     *
+     * @return $this The current object.
+     */
+    private function forbidden()
+    {
+        // Output the error
+        $this->setStatusCode(403);
+        if (empty($this->response['message'])) {
+            $this->response = ['message' => 'Forbidden.'];
         }
         $this->output(true);
         exit;
@@ -170,7 +186,10 @@ class TransmissionApi extends \RestPHP\BaseAPI
     {
         // Get all torrents and convert them to arrays
         try {
-            $torrents = TransmissionUtil::convertTorrentsToArrays($this->transmission->all());
+            $torrents = TransmissionUtil::convertTorrentsToArrays(
+                $this->transmission->all(),
+                isset($this->data['minimal']) ? $this->data['minimal'] : false
+            );
         } catch (\Exception $ex) {
             $this->handleErrors($ex);
         }
@@ -213,7 +232,10 @@ class TransmissionApi extends \RestPHP\BaseAPI
     {
         // Get the torrent
         $torrent = $this->find($identifier);
-        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent])[0];
+        $torrent = TransmissionUtil::convertTorrentsToArrays(
+            [$torrent],
+            isset($this->data['minimal']) ? $this->data['minimal'] : false
+        )[0];
         $this->response = ['torrent' => $torrent];
         $this->addHypertextRoute('start', "/torrent/{$identifier}/start");
         $this->addHypertextRoute('stop', "/torrent/{$identifier}/stop");
@@ -274,7 +296,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         }
 
         // Return the torrent
-        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent])[0];
+        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent], true)[0];
         $this->response = ['torrent' => $torrent];
         $this->addHypertextRoute('start', "/torrent/{$torrent['hash']}/start");
         $this->addHypertextRoute('stop', "/torrent/{$torrent['hash']}/stop");
@@ -295,7 +317,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         $torrent = $this->find($identifier);
 
         // Check if we should delete files
-        $deleteFiles = isset($this->data['files']) && $this->data['files'] == '1';
+        $deleteFiles = (isset($this->data['files']) && $this->data['files'] == '1');
 
         // Delete the torrent
         try {
@@ -355,7 +377,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         }
 
         // Output the result
-        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent])[0];
+        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent], true)[0];
         $this->response = ['message' => 'Torrent started.', 'torrent' => $torrent];
         $this->addHypertextRoute('start', "/torrent/{$torrent['hash']}/start");
         $this->addHypertextRoute('stop', "/torrent/{$torrent['hash']}/stop");
@@ -407,7 +429,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         }
 
         // Output the result
-        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent])[0];
+        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent], true)[0];
         $this->response = ['message' => 'Torrent stopped.', 'torrent' => $torrent];
         $this->addHypertextRoute('start', "/torrent/{$torrent['hash']}/start");
         $this->addHypertextRoute('stop', "/torrent/{$torrent['hash']}/stop");
@@ -459,7 +481,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         }
 
         // Output the result
-        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent])[0];
+        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent], true)[0];
         $this->response = ['message' => 'Torrent verification started.', 'torrent' => $torrent];
         $this->addHypertextRoute('start', "/torrent/{$torrent['hash']}/start");
         $this->addHypertextRoute('stop', "/torrent/{$torrent['hash']}/stop");
@@ -511,7 +533,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
         }
 
         // Output the result
-        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent])[0];
+        $torrent = TransmissionUtil::convertTorrentsToArrays([$torrent], true)[0];
         $this->response = ['message' => 'Torrent reannounce started.', 'torrent' => $torrent];
         $this->addHypertextRoute('start', "/torrent/{$torrent['hash']}/start");
         $this->addHypertextRoute('stop', "/torrent/{$torrent['hash']}/stop");

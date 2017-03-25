@@ -1,9 +1,5 @@
 # Transmission API
 
-## Todo
- - authentication in transmission-config.php
- - whitelist in transmission-config.php
-
 ## Installation
 Create a composer.json file with:
 ```
@@ -22,18 +18,68 @@ This installs all required libraries.
 After installation is done, copy the index.php, .htaccess and the two config files to the root of the location from which you want to run the API.
 Edit the configuration files if needed.
 
-Model/Torrent.php -> getStatus, add status !== null check.
-Model/Torrent.php -> setSize, convert to double instead of integer.
-Model/File.php -> setSize, convert to double instead of integer.
+You will need to enter the transmission username and password in the transmission-config.php file,
+as well as the whitelist for the IP addresses you would like to have access to the API.
 
+## Package "transmission-php" fixes
+A few fixes need to be applied to the transmission-php package for it to work correctly,
+since I couldn't include my edited version of that repository in this package.
 
-## Authentication
-Transmission username and password are required for each request.
+In "vender/kleiram/transmission-php/lib/Transmission/Model/Torrent.php, replace:
+
+```php
+$this->eta = (integer) $eta;
+```
+
+with:
+
+```php
+$this->eta = (double) $eta;
+```
+
+and:
+
+```php
+$this->size = (integer) $size;
+```
+
+with:
+
+```php
+$this->size = (double) $size;
+```
+
+and:
+
+```php
+return $this->status->getValue();
+```
+
+with:
+
+```php
+if ($this->status !== null) {
+    return $this->status->getValue();
+}
+return null;
+```
+
+In "vender/kleiram/transmission-php/lib/Transmission/Model/File.php, replace:
+
+```php
+$this->size = (integer) $size;
+```
+
+with:
+
+```php
+$this->size = (double) $size;
+```
 
 ## Endpoints
- - GET: /torrent. Returns an array of all torrents.
- - GET: /torrent/[0-9]. Returns a single torrent by id.
- - GET: /torrent/[a-zA-Z0-9]. Returns a single torrent by hash.
+ - GET: /torrent. Returns an array of all torrents. Optional parameter: minimal, 1/0 whether to retrieve minimal data. Defaults to 0.
+ - GET: /torrent/[0-9]. Returns a single torrent by id. Optional parameter: minimal, 1/0 whether to retrieve minimal data. Defaults to 0.
+ - GET: /torrent/[a-zA-Z0-9]. Returns a single torrent by hash. Optional parameter: minimal, 1/0 whether to retrieve minimal data. Defaults to 0.
  - POST: /torrent. Adds a torrent from a magnet uri. Required parameter: uri, should contain the magnet uri.
  - DELETE: /torrent/[0-9]. Deletes a torrent by id. Optional parameter: files, 1/0 whether to delete files from disk.
  - DELETE: /torrent/[a-zA-Z0-9]. Deletes a torrent by hash. Optional parameter: files, 1/0 whether to delete files from disk.

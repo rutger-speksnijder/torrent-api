@@ -13,10 +13,11 @@ class TransmissionUtil
      * Converts torrent objects to arrays.
      *
      * @param array $torrents The torrent objects.
+     * @param optional boolean $minimal Whether to get minimal details, defaults to false.
      *
      * @return array An array with torrents converted to arrays.
      */
-    public static function convertTorrentsToArrays($torrents)
+    public static function convertTorrentsToArrays($torrents, $minimal = false)
     {
         // Get the mapping for each object type
         $fileMapping = \Transmission\Model\File::getMapping();
@@ -30,6 +31,19 @@ class TransmissionUtil
         foreach ($torrents as $torrent) {
             // Get the torrent data
             $torrentData = self::convertObjectToArray($torrent, $torrentMapping);
+
+            // Check if minimal data is required
+            if ($minimal) {
+                // Unset unnessecary data
+                unset($torrentData['files']);
+                unset($torrentData['peers']);
+                unset($torrentData['trackers']);
+                unset($torrentData['trackerStats']);
+
+                // Add the torrent data to the collection
+                $data[] = $torrentData;
+                continue;
+            }
 
             // Convert files
             foreach ($torrentData['files'] as $key => $file) {

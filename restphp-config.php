@@ -74,5 +74,5 @@ return [
      * will be used as a fallback.
      * @var boolean
      */
-    'clientResponseType' => true,
+    'clientResponseType' => false,
 ];
