@@ -11,16 +11,11 @@
 // Composer autoloader
 require 'vendor/autoload.php';
 
-// Check if we have a request location
-if (!isset($_REQUEST['l'])) {
-    $_REQUEST['l'] = '';
-}
-
 // Load the api configuration
 $configuration = (new \RestPHP\Configuration)->createFromFile('restphp-config.php');
 
 // Create the api
-$api = new \TransmissionApi\TransmissionApi($_REQUEST['l'], $configuration);
+$api = new \TransmissionApi\TransmissionApi($_SERVER['REQUEST_URI'], $configuration);
 
 // Check if no errors occurred during creation
 // If errors did occur they must be fixed before the API will work.

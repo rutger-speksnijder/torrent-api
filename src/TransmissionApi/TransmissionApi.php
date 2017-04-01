@@ -85,7 +85,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
     public function notFound()
     {
         // Output the not found error
-        $this->setStatusCode(404);
+        $this->statusCode = 404;
         if (empty($this->response['message'])) {
             $this->response = ['message' => 'Requested endpoint could not be found.'];
         }
@@ -101,7 +101,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
     private function unauthorized()
     {
         // Output the unauthorized error
-        $this->setStatusCode(401);
+        $this->statusCode = 401;
         if (empty($this->response['message'])) {
             $this->response = ['message' => 'Unauthorized.'];
         }
@@ -117,7 +117,7 @@ class TransmissionApi extends \RestPHP\BaseAPI
     private function forbidden()
     {
         // Output the error
-        $this->setStatusCode(403);
+        $this->statusCode = 403;
         if (empty($this->response['message'])) {
             $this->response = ['message' => 'Forbidden.'];
         }

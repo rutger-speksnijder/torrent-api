@@ -21,8 +21,8 @@
     ],
     "require": {
         "kleiram/transmission-php": "dev-master",
-        "rutger/simpleroute": "^1.1",
-        "rutger/restphp": "^2.2"
+        "rutger/simpleroute": "1.0",
+        "rutger/restphp": "1.0"
     },
     "autoload": {
         "psr-0": {

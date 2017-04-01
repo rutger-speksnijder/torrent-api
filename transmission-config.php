@@ -12,9 +12,9 @@ return [
     'port' => 9091,
     'username' => '',
     'password' => '',
-    'whitelist' => array(
+    'whitelist' => [
         'localhost',
         '127.0.01',
         '::1',
-    ),
+    ],
 ];
